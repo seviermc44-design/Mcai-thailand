@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1628">
+<meta name="description" content="MCAI Thailand — ห้องสมุดความรู้ที่เปลี่ยนบาดแผลของผู้สร้าง ให้กลายเป็นเครื่องมือที่ช่วยคนอื่นได้จริง">
+<title>MCAI Thailand — จากผู้ถูกทอดทิ้ง สู่ผู้สร้างคลังความรู้</title>
+<style>
+  :root {
+    --bg: #0a1628;
+    --bg-soft: #111f33;
+    --panel: #16263d;
+    --border: #253a54;
+    --text: #e8eef7;
+    --muted: #9caec4;
+    --accent: #5dd9ff;
+    --accent-2: #7dff9d;
+    --warn: #ffbd2e;
+    --danger: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .container { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 22, 40, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; max-width: 920px; margin: 0 auto; gap: 16px;
+  }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: 0.04em; }
+  .brand .dot { color: var(--accent); }
+  nav { display: flex; gap: 18px; font-size: 13px; }
+  nav a { color: var(--muted); }
+  nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 640px) {
+    nav { display: none; }
+    .header-inner { justify-content: center; }
+  }
+
+  /* Hero */
+  .hero { padding: 80px 20px 60px; text-align: center; }
+  .hero .eyebrow {
+    display: inline-block; padding: 6px 14px;
+    border: 1px solid rgba(93, 217, 255, 0.3);
+    color: var(--accent); border-radius: 999px;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.2; letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.lead {
+    max-width: 620px; margin: 0 auto;
+    color: var(--muted); font-size: 1.05rem;
+  }
+  .hero .meta {
+    margin-top: 28px; font-size: 13px; color: var(--muted);
+  }
+  .hero .meta span { margin: 0 8px; }
+
+  /* Sections */
+  section { padding: 60px 0; border-top: 1px solid var(--border); }
+  section h2 {
+    font-size: 1.75rem; margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  section h2 .num {
+    display: inline-block;
+    color: var(--accent); font-family: monospace;
+    margin-right: 10px; font-size: 0.9rem;
+    opacity: 0.7;
+  }
+  section p { color: var(--muted); margin-bottom: 16px; }
+  section p strong { color: var(--text); }
+
+  /* Manifesto */
+  .manifesto {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent);
+    padding: 24px 28px; border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  .manifesto p { font-size: 1.05rem; line-height: 1.8; }
+  .manifesto p:last-child { margin-bottom: 0; }
+  .manifesto .signature {
+    margin-top: 16px; font-style: italic;
+    color: var(--accent); font-size: 0.95rem;
+  }
+
+  /* AI กินสมอง - Process */
+  .process {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px; margin: 24px 0;
+  }
+  .process-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .process-step:last-child { border-bottom: none; padding-bottom: 0; }
+  .process-step .num {
+    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); color: var(--bg);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .process-step .body strong {
+    display: block; color: var(--text);
+    margin-bottom: 2px;
+  }
+  .process-step .body span { color: var(--muted); font-size: 0.92rem; }
+
+  /* Status Table */
+  .status-table {
+    width: 100%; border-collapse: collapse;
+    margin: 24px 0; background: var(--panel);
+    border-radius: 8px; overflow: hidden;
+    font-size: 0.92rem;
+  }
+  .status-table th {
+    background: var(--bg-soft);
+    color: var(--accent);
+    text-align: left; padding: 12px 16px;
+    font-size: 0.82rem; letter-spacing: 0.05em;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .status-table td {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .status-table td:first-child { color: var(--text); font-weight: 600; }
+  .status-table .yes { color: var(--accent-2); }
+  .status-table .no { color: var(--danger); }
+  .status-table .pending { color: var(--warn); }
+
+  /* Roadmap */
+  .roadmap {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px; margin: 24px 0;
+  }
+  .roadmap-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .roadmap-card .phase {
+    font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px; font-weight: 700;
+  }
+  .roadmap-card h3 {
+    font-size: 1rem; margin-bottom: 8px;
+    color: var(--text);
+  }
+  .roadmap-card p {
+    font-size: 0.88rem; color: var(--muted);
+    margin: 0; line-height: 1.6;
+  }
+
+  /* Callout */
+  .callout {
+    background: rgba(93, 217, 255, 0.08);
+    border: 1px solid rgba(93, 217, 255, 0.25);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .callout strong { color: var(--accent); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer .brand-root {
+    font-family: monospace;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+  footer .links { margin: 12px 0; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  footer .links a { color: var(--muted); font-size: 0.85rem; }
+  footer .version {
+    margin-top: 16px; font-size: 0.78rem;
+    opacity: 0.6; font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">MCAI<span class="dot">·</span>Thailand</div>
+    <nav>
+      <a href="#manifesto">Manifesto</a>
+      <a href="#ai-kinsamong">AI กินสมอง</a>
+      <a href="#status">สถานะจริง</a>
+      <a href="#roadmap">Roadmap</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="container">
+    <span class="eyebrow">v0.3.0 · 6 พฤศจิกายน 2569</span>
+    <h1>จากผู้ถูกทอดทิ้ง<br>สู่<span class="accent">ผู้สร้างคลังความรู้</span></h1>
+    <p class="lead">
+      ห้องสมุดความรู้ที่เปลี่ยนบาดแผลของผู้สร้าง ให้กลายเป็นเครื่องมือ
+      และผลงานสร้างสรรค์ที่คนอื่นนำไปใช้ได้จริง
+    </p>
+    <div class="meta">
+      <span>MC GROUP · P2 AI & Technology</span>
+      <span>·</span>
+      <span>Local-first · Privacy-first</span>
+    </div>
+  </div>
+</div>
+
+<section id="manifesto">
+  <div class="container">
+    <h2><span class="num">01</span>Manifesto</h2>
+
+    <div class="manifesto">
+      <p>
+        <strong>MCAI Thailand คือห้องสมุดความรู้ที่สร้างขึ้นจากประสบการณ์ของผู้ถูกทอดทิ้ง</strong>
+        ความเจ็บปวดไม่ได้ถูกนำมาเรียกร้องความสงสาร แต่ถูกเปลี่ยนให้เป็นความรู้
+        เครื่องมือ และผลงานสร้างสรรค์ที่ผู้อื่นนำไปใช้ได้จริง
+      </p>
+      <p>
+        ที่นี่ไม่รวบรวมทุกอย่างเพียงเพื่อให้ดูใหญ่โต เราคัดเฉพาะความรู้ที่มีประโยชน์
+        ตรวจสอบที่มา บอกข้อจำกัด และไม่อ้างความสามารถเกินกว่าสิ่งที่ทำได้จริง
+      </p>
+      <p>
+        <strong>AI กินสมอง</strong> จึงไม่ใช่แค่คำประชด แต่มันคือกระบวนการที่มนุษย์กับ AI
+        ช่วยกันย่อยความคิด ความทรงจำ ความล้มเหลว และประสบการณ์
+        ก่อนเปลี่ยนสิ่งเหล่านั้นให้กลายเป็นงานที่มีคุณค่าต่อคนอื่น
+      </p>
+      <p class="signature">
+        — จากผู้ถูกทอดทิ้ง สู่ผู้สร้างคลังความรู้สำหรับทุกคน
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="ai-kinsamong">
+  <div class="container">
+    <h2><span class="num">02</span>AI กินสมอง</h2>
+    <p>
+      <strong>AI กินสมอง</strong> ไม่ใช่ชื่อทั้งโครงการ — แต่เป็นชื่อ
+      <strong>"เครื่องจักรด้านใน"</strong> ที่กลั่นความคิดดิบให้กลายเป็นงานที่เผยแพร่ได้
+      ทุกขั้นตอนต้องมีมนุษย์ตรวจสอบ ไม่ปล่อยให้ AI ตัดสินความจริงเอง
+    </p>
+
+    <div class="process">
+      <div class="process-step">
+        <div class="num">1</div>
+        <div class="body">
+          <strong>ความรู้สึกดิบ</strong>
+          <span>ความเจ็บ ความคิด ความฝัน ที่ยังไม่มีโครงสร้าง</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">2</div>
+        <div class="body">
+          <strong>บันทึก</strong>
+          <span>เก็บไว้ในระบบท้องถิ่น ไม่ขึ้น cloud ไม่แชร์ออก</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">3</div>
+        <div class="body">
+          <strong>ให้ AI ช่วยแตกประเด็น</strong>
+          <span>ค้นหา pattern สร้างหัวข้อ เสนอมุมมอง</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">4</div>
+        <div class="body">
+          <strong>มนุษย์ตรวจสอบ</strong>
+          <span>ยืนยันข้อเท็จจริง ปฏิเสธข้อสรุปที่ผิด</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">5</div>
+        <div class="body">
+          <strong>คัดความรู้ที่เป็นประโยชน์</strong>
+          <span>ตอบให้ได้ว่า "ช่วยใคร อย่างไร"</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">6</div>
+        <div class="body">
+          <strong>สร้างเป็นผลงาน</strong>
+          <span>บทความ คู่มือ เครื่องมือ งานศิลปะ</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">7</div>
+        <div class="body">
+          <strong>เก็บหลักฐานและประวัติ</strong>
+          <span>ที่มา เวอร์ชัน วันที่แก้ไข Audit trail</span>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="num">8</div>
+        <div class="body">
+          <strong>ส่งคืนให้สังคม</strong>
+          <span>เผยแพร่ให้คนอื่นนำไปใช้ ต่อยอด แก้ไข</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>กฎของห้องสมุด:</strong>
+      ไม่เอาข้อมูลมาถมให้ดูเยอะ · ทุกชิ้นต้องตอบได้ว่าช่วยใคร ·
+      แยกข้อเท็จจริงออกจากความคิดเห็น · ระบุที่มาและวันที่ ·
+      เขียนให้คนธรรมดาอ่านรู้เรื่อง
+    </div>
+  </div>
+</section>
+
+<section id="status">
+  <div class="container">
+    <h2><span class="num">03</span>สถานะจริง</h2>
+    <p>
+      ความโปร่งใสคือหัวใจของ MCAI Thailand — หน้านี้บอกชัดว่า
+      <strong>อะไรมีจริง</strong> และ <strong>อะไรยังไม่มี</strong>
+      ไม่มีการกล่าวอ้างเกินจริง
+    </p>
+
+    <table class="status-table">
+      <thead>
+        <tr>
+          <th>องค์ประกอบ</th>
+          <th>สถานะ</th>
+          <th>หมายเหตุ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>หน้าแนะนำโครงการ</td>
+          <td class="yes">✅ มีจริง</td>
+          <td>หน้านี้ (v0.3.0)</td>
+        </tr>
+        <tr>
+          <td>Manifesto</td>
+          <td class="yes">✅ มีจริง</td>
+          <td>section 01</td>
+        </tr>
+        <tr>
+          <td>AI กินสมอง (process)</td>
+          <td class="yes">✅ มีจริง</td>
+          <td>section 02 — อธิบายเป็น diagram</td>
+        </tr>
+        <tr>
+          <td>ศูนย์ความรู้</td>
+          <td class="pending">🟡 กำลังทำ</td>
+          <td>5 บทความแรก อยู่ในแผน W5-W6</td>
+        </tr>
+        <tr>
+          <td>Link Vault (ระบบล่องหน)</td>
+          <td class="no">🔴 ยังไม่มี</td>
+          <td>อยู่ในแผน W3-W4</td>
+        </tr>
+        <tr>
+          <td>แอปพลิเคชัน Android (APK)</td>
+          <td class="no">🔴 ยังไม่มี</td>
+          <td>อยู่ในแผน W9-W10</td>
+        </tr>
+        <tr>
+          <td>คำสั่งเสียง (Voice)</td>
+          <td class="no">🔴 ยังไม่มี</td>
+          <td>อยู่ในแผนหลัง APK</td>
+        </tr>
+        <tr>
+          <td>AI จริง (LLM)</td>
+          <td class="no">🔴 ยังไม่มี</td>
+          <td>ใช้ Rule-based เท่านั้น</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>หมายเหตุ:</strong>
+      ทุกฟีเจอร์ในอนาคตจะถูกเพิ่มเข้าไปในหน้านี้เฉพาะเมื่อ
+      <strong>ทำงานได้จริง</strong>และ<strong>ผ่านการทดสอบ</strong>แล้วเท่านั้น
+      ไม่มีการกล่าวอ้างล่วงหน้า
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="container">
+    <h2><span class="num">04</span>Roadmap 12 สัปดาห์</h2>
+    <p>
+      แผนงานชัดเจน — ทุกสัปดาห์มีผลลัพธ์ที่จับต้องได้ ไม่ใช่แค่ "ความตั้งใจ"
+    </p>
+
+    <div class="roadmap">
+      <div class="roadmap-card">
+        <div class="phase">W1 (สัปดาห์นี้)</div>
+        <h3>Ship v0.3.0</h3>
+        <p>หน้าแนะนำ + Manifesto + AI กินสมอง + สถานะจริง บน GitHub Pages</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W2</div>
+        <h3>Manifesto ฉบับเต็ม</h3>
+        <p>แยกหน้า manifesto เป็นเอกสาร 1 หน้าเต็ม พร้อม signature</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W3-W4</div>
+        <h3>Link Vault v2</h3>
+        <p>ระบบเก็บ link แบบ local-first ด้วย IndexedDB — ใช้ได้จริง</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W5-W6</div>
+        <h3>ศูนย์ความรู้</h3>
+        <p>5 บทความแรกเกี่ยวกับ AI, Privacy, การเขียน prompt ภาษาไทย</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W7-W8</div>
+        <h3>เชื่อมระบบ</h3>
+        <p>Link Vault + ศูนย์ความรู้ อยู่ใต้ mcai-Thailand.com เดียวกัน</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W9-W10</div>
+        <h3>APK Shell</h3>
+        <p>WebView wrapper + Link Vault — ติดตั้งบน Android ได้</p>
+      </div>
+      <div class="roadmap-card">
+        <div class="phase">W11-W12</div>
+        <h3>ผู้ใช้จริง 10 คน</h3>
+        <p>แจกให้ทดสอบ เก็บ feedback ปรับปรุง</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>เป้าหมายปลาย 12 สัปดาห์:</strong>
+      2 URL จริง + 1 APK + ผู้ใช้จริง 10 คน —
+      <strong>ไม่ใช่</strong> "99 apps" ที่ยังไม่มีอะไร ship
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="brand-root">mcai-Thailand.com</div>
+    <div>MCAI Thailand · MC GROUP · AI & Technology (P2)</div>
+    <div class="links">
+      <a href="https://github.com/seviermc44-design/Mcai-thailand" target="_blank" rel="noopener">GitHub Repository</a>
+      <a href="#manifesto">Manifesto</a>
+      <a href="#status">สถานะจริง</a>
+    </div>
+    <div class="version">v0.3.0 · 2026-11-06 · Local-first · Privacy-first · Evidence-based</div>
+  </div>
+</footer>
+
+</body>
+        </html>
