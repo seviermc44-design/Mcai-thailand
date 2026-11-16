@@ -1,0 +1,257 @@
+schema_version: "1.0.0"
+file_id: "FILE-03"
+name: "EXECUTION_WORKFLOW"
+title: "MC GROUP Evidence & Execution System — Execution Workflow"
+status: "PROPOSED"
+updated_at: "2026-11-16"
+source_of_truth:
+  governance: "MC_GROUP_FOUNDATION.md"
+  status_vocabulary: "STATUS_DICTIONARY.yaml"
+  evidence_record_format: "FILE 01 — EVIDENCE_RECORD_TEMPLATE.yaml (location and schema must be verified before field mapping)"
+purpose: >-
+  Define a controlled, auditable lifecycle for project execution items, evidence,
+  reviews, approvals, and deployment. This workflow is a proposed operating model;
+  it does not assert that connected systems, roles, automations, or deployment
+  controls currently exist.
+
+scope:
+  includes:
+    - "Project-scoped tasks and deliverables"
+    - "Evidence submission and human review"
+    - "Status transitions and decision records"
+    - "Proposed release/deployment gates"
+    - "Scoped AI-assisted work and handoffs"
+  excludes:
+    - "Replacing MC GROUP governance or canonical structure"
+    - "Replacing or duplicating the existing product Registry"
+    - "Granting access based on priority labels"
+    - "Claiming DNS, authentication, deployment, or integration has been verified"
+
+principles:
+  - "MC_GROUP_FOUNDATION.md governs architecture, data ownership, security boundaries, and change control."
+  - "STATUS_DICTIONARY.yaml provides the canonical status codes and transition meanings."
+  - "Workflow, verification, deployment, and artifact maturity are separate dimensions; never collapse them into one status."
+  - "A status change is an auditable event, not an overwrite that erases prior state."
+  - "Evidence must support claims; plans, URLs, commits, and AI output alone do not prove a deployed or verified result."
+  - "Human authorization is required for consequential approvals unless a separately approved policy defines a bounded automation."
+  - "Priority P1-P4 does not provide authorization or bypass review gates."
+  - "Use project-scoped records and reference existing Registry identifiers; do not create a replacement product Registry."
+  - "When FILE 01 is located, map this workflow to its verified schema without silently changing that schema."
+
+roles:
+  project_owner:
+    responsibility:
+      - "Owns the project scope, accountable owner assignment, and project-level decisions."
+      - "Confirms that a work item is ready and accepts completed work within delegated authority."
+      - "Ensures dependencies, risks, and required access are identified."
+    constraints:
+      - "Must not approve access or changes beyond their delegated authority."
+  contributor:
+    responsibility:
+      - "Performs assigned work and records truthful progress, blockers, and evidence references."
+      - "Submits work for review and responds to requested changes."
+    constraints:
+      - "Must not self-assert independent verification where separation of duties is required."
+  reviewer:
+    responsibility:
+      - "Reviews deliverables and evidence against stated acceptance criteria."
+      - "Records a review outcome, rationale, identity, and time."
+    constraints:
+      - "Must have appropriate authorization and sufficient independence for the risk level."
+  security_or_system_owner:
+    responsibility:
+      - "Reviews security-sensitive access, Registry integration, and operational changes within their authority."
+      - "Confirms required security checks and rollback readiness for applicable changes."
+    constraints:
+      - "A role name in this document does not establish that a specific person or team has been assigned."
+  ai_agent:
+    responsibility:
+      - "May assist only with a task-scoped, explicitly provided context and permitted actions."
+      - "Returns proposed outputs with source references and uncertainty where relevant."
+    constraints:
+      - "Is not an approver or authority by default."
+      - "Must not receive secrets, Vault contents, unrelated personal data, or unrestricted system credentials."
+      - "AI-produced changes require applicable human review before acceptance or deployment."
+
+record_requirements:
+  description: >-
+    Capture the following as supported by the verified FILE 01 schema or linked
+    audit events. The names below are conceptual requirements, not asserted FILE 01 fields.
+  attributes:
+    - "stable work-item identifier"
+    - "project identifier and, where applicable, existing Registry product identifier"
+    - "title, scope, owner, priority, and acceptance criteria"
+    - "workflow status, verification status, deployment status, and artifact maturity as separate values when applicable"
+    - "dependencies, risks, and blocker details"
+    - "status transition history: prior/new value, actor, time, reason, and evidence references"
+    - "evidence references and verification outcome"
+    - "review/approval identity, decision, time, and scope"
+    - "deployment environment and deployment/rollback evidence when applicable"
+    - "links to related tasks, decisions, artifacts, and follow-up work"
+  compatibility:
+    - "Locate and review FILE 01 before implementing storage or field-level validation."
+    - "Do not invent FILE 01 field names or alter its schema implicitly."
+    - "If the verified schema cannot represent a required audit fact, document the gap and obtain approval for an additive, versioned change."
+
+workflow:
+  stages:
+    intake:
+      description: "Capture a request as a project-scoped work item without creating a product Registry entry."
+      initial_status: "BACKLOG"
+      required_checks:
+        - "Identify the requesting context and accountable project owner, or mark ownership as unresolved."
+        - "Link to an existing product Registry identifier when relevant; do not copy the product catalog."
+        - "Classify data and access needs under MC_GROUP_FOUNDATION.md."
+        - "Record the requested outcome, scope boundaries, dependencies, and known uncertainty."
+      outcomes:
+        - "Track as BACKLOG."
+        - "Return for clarification or mark BLOCKED if required inputs, ownership, or authorization are missing."
+        - "Cancel only with an authorized decision and recorded rationale."
+
+    readiness:
+      description: "Confirm the work can begin safely and with sufficient clarity."
+      transition_to: "READY"
+      required_checks:
+        - "A project owner and responsible contributor are identified or explicitly marked pending."
+        - "Scope and acceptance criteria are testable enough for the work."
+        - "Required inputs and dependencies are available or have named owners."
+        - "Data classification, access boundary, and any privacy/security review need are identified."
+        - "No secret or unrelated personal data is embedded in the task record."
+      outcomes:
+        - "Move to READY when the checks are satisfied."
+        - "Remain BACKLOG or move to BLOCKED when clarification or a dependency is outstanding."
+
+    execution:
+      description: "Perform the approved task and preserve traceability as work changes."
+      transition_to: "IN_PROGRESS"
+      required_checks:
+        - "Contributor has authorized, least-privilege access to the necessary resources."
+        - "Changes are made in the appropriate project/system boundary."
+        - "Material decisions, changes, and evidence references are recorded."
+        - "Unplanned scope, sensitive data, or changes to canonical systems trigger owner review before proceeding."
+      blocker_handling:
+        - "Move to BLOCKED when work cannot safely or correctly proceed."
+        - "Record the blocker, impact, dependency/decision required, accountable unblock owner, and next review point."
+        - "Do not bypass missing approvals, access controls, or failed security checks to maintain apparent progress."
+        - "After resolution, record the resolution and transition back to the appropriate active state."
+
+    review:
+      description: "Submit completed work and supporting evidence for acceptance and, where applicable, independent verification."
+      transition_to: "IN_REVIEW"
+      required_submission:
+        - "Completed scope and acceptance criteria, including any deviations."
+        - "Evidence references sufficient for a reviewer to reproduce or assess the claim."
+        - "Known limitations, risks, and remaining work."
+        - "For code/configuration changes, the relevant change reference and test results."
+      outcomes:
+        accepted:
+          workflow_status: "DONE"
+          conditions:
+            - "Authorized reviewer/project owner accepts the defined scope."
+            - "Acceptance decision and rationale are recorded."
+            - "Completion evidence is linked where applicable."
+            - "Verification remains a separate status and is set only when its criteria are met."
+        changes_requested:
+          workflow_status: "CHANGES_REQUESTED"
+          conditions:
+            - "Reviewer records specific gaps, rationale, and requested actions."
+            - "Work returns to execution after the contributor acknowledges the changes."
+        blocked:
+          workflow_status: "BLOCKED"
+          conditions:
+            - "Review cannot proceed because required evidence, authority, dependency, or decision is missing."
+        rejected_evidence:
+          verification_status: "REJECTED"
+          conditions:
+            - "Reviewer records why evidence fails the stated criteria and what corrective evidence is needed."
+
+    verification:
+      description: "Assess a claim or control against explicit evidence and review criteria."
+      rules:
+        - "Use the verification dimension in STATUS_DICTIONARY.yaml independently from workflow status."
+        - "Record scope, criteria, evidence references, reviewer identity, and review time."
+        - "Use PENDING_REVIEW while awaiting an authorized reviewer."
+        - "Use VERIFIED only when evidence meets the stated criteria."
+        - "Use STALE when a material change means the prior evidence may no longer represent current state."
+        - "Use NOT_APPLICABLE only with a recorded reason."
+        - "AI output cannot independently verify its own claims."
+
+    release_and_deployment:
+      description: "Prepare and perform an approved deployment only when deployment is in scope."
+      preconditions:
+        - "Target environment is explicitly identified."
+        - "Required owner and security approvals are recorded for the change."
+        - "Applicable tests and security checks have passed and are linked as evidence."
+        - "Backup, recovery, and rollback approach is documented and feasible for the change."
+        - "Secrets remain server-side or in an approved secret manager and are not exposed to clients or public repositories."
+        - "Registry integration, if involved, is validated as non-destructive and compatible with existing consumers."
+        - "Production changes have explicit owner approval; proposed domains or URLs do not count as deployment evidence."
+      execution_rules:
+        - "Record deployment status separately from task completion and evidence verification."
+        - "During deployment, use DEPLOYING only while work is in progress."
+        - "After deployment execution without completed checks, use DEPLOYED_UNVERIFIED."
+        - "Use DEPLOYED_VERIFIED only after required post-deployment checks are recorded for the named environment."
+        - "If deployment fails, record impact and recovery actions; use DEPLOYMENT_FAILED or ROLLED_BACK as appropriate."
+        - "Do not claim a hostname or service is live without independent verification."
+      environments:
+        allowed_values_reference: "STATUS_DICTIONARY.yaml deployment.environments"
+        note: "Environment names identify scope; they do not imply that an environment currently exists."
+
+    closure:
+      description: "Close the current work item while preserving its history and follow-up links."
+      completion_checks:
+        - "Acceptance decision and required completion evidence are recorded."
+        - "Open risks, limitations, and follow-up items are linked or explicitly accepted by an authorized owner."
+        - "Verification and deployment statuses remain accurate and separate."
+        - "Sensitive artifacts are stored only in their approved restricted boundary."
+      cancellation_checks:
+        - "Authorized owner decision and cancellation rationale are recorded."
+        - "Completed work and evidence are retained according to applicable policy."
+        - "Any operational changes already made are handled safely and are not silently discarded."
+
+transitions:
+  canonical_rules_reference: "STATUS_DICTIONARY.yaml status_dimensions.workflow.transition_rules"
+  additional_rules:
+    - "No transition may skip required authorization or evidence gates defined for that work type."
+    - "Every consequential transition records actor, timestamp, reason, and relevant evidence references."
+    - "DONE and CANCELLED are terminal for the current record; reopening creates an auditable revision or linked follow-up item."
+    - "A task may be DONE while deployment is NOT_DEPLOYED or NOT_APPLICABLE."
+    - "A task may be DONE while verification remains PENDING_REVIEW, REJECTED, or NOT_APPLICABLE only if the acceptance scope permits it and the distinction is explicit."
+    - "Deployment cannot become DEPLOYED_VERIFIED solely because the task is DONE or a build passed."
+    - "Unknown or unsupported status values must be rejected or explicitly quarantined; never coerce them into a success state."
+
+approval_gates:
+  general:
+    - "Project owner approves scope and task acceptance within their authority."
+    - "Reviewer verifies evidence against explicit criteria; use separation of duties where risk requires it."
+    - "Sensitive access and security-impacting changes require review by the applicable authorized owner."
+  registry_integration:
+    - "Verify the existing Registry location, schema, ownership, and consumers before integration."
+    - "Do not create, replace, or regenerate a Registry."
+    - "Test adapters and changes against a non-production copy or isolated test fixture where possible."
+    - "Require compatibility validation and rollback planning before approved writes."
+  ai_assisted_work:
+    - "Provide only task-scoped, minimum necessary context."
+    - "Record AI assistance where it materially affects a decision or artifact, consistent with the verified evidence schema."
+    - "Require human review for consequential outputs, access decisions, canonical data changes, and production changes."
+    - "Do not provide secrets, Vault contents, or unrelated personal data to external AI services."
+
+exception_handling:
+  - "If the owner, authority, evidence schema, data classification, or integration target is unknown, stop the affected action and record the uncertainty."
+  - "If an urgent security or operational incident requires an exception, follow the applicable incident process; this proposed workflow does not authorize bypassing existing controls."
+  - "Document exception scope, approver, reason, compensating controls, expiry/review point, and evidence in the approved system."
+  - "Do not backdate approvals or fabricate evidence."
+
+implementation_and_audit_notes:
+  - "This YAML defines a proposed process, not an implemented workflow engine or access-control system."
+  - "Before automation, validate this file and STATUS_DICTIONARY.yaml against the repository's chosen YAML parser and schema tooling."
+  - "After locating FILE 01, map conceptual record requirements to its actual fields and document gaps without silent schema changes."
+  - "FILE 04 dashboards must be derived views of authorized source records, not an independent status authority."
+  - "FILE 10 should test allowed status transitions, evidence requirements, separation of status dimensions, approval gates, and Registry non-regression."
+  - "Keep audit records append-only or otherwise tamper-evident where supported by the verified platform; do not claim tamper-proof storage without evidence."
+
+change_log:
+  - version: "1.0.0"
+    date: "2026-11-16"
+    status: "PROPOSED"
+    change: "Initial execution workflow aligned with FILE 00 and FILE 02; pending mapping to the verified FILE 01 schema and review by authorized owners."
