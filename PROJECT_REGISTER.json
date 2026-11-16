@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "file_id": "FILE-05",
+  "name": "PROJECT_REGISTER",
+  "title": "MC GROUP Evidence & Execution System — Project Register",
+  "status": "PROPOSED",
+  "updated_at": "2026-11-16",
+  "source_of_truth": {
+    "governance": "MC_GROUP_FOUNDATION.md",
+    "status_vocabulary": "STATUS_DICTIONARY.yaml",
+    "execution_workflow": "EXECUTION_WORKFLOW.yaml",
+    "dashboard_contract": "PROGRESS_DASHBOARD.json",
+    "product_catalog": "Existing Registry/products.json (path, schema, and availability must be verified before integration)"
+  },
+  "purpose": "Define a project-scoped execution index for MC GROUP work. This file is not the product Registry, is not a replacement for it, and does not assert that projects or integrations are live.",
+  "governance": {
+    "record_scope": "Projects and execution initiatives only; do not use this register to create canonical products, brands, or organizational entities.",
+    "registry_rule": "Reference existing product Registry identifiers when applicable. Do not copy the product catalog, create a parallel product Registry, or write to the existing Registry from this file.",
+    "authority": "Each project owner is accountable for the accuracy of their project records, subject to MC GROUP governance and access controls.",
+    "priority_rule": "P1-P4 records organizational priority only and does not grant authorization or access.",
+    "status_rule": "Keep workflow, verification, deployment, and artifact maturity as separate status dimensions, following STATUS_DICTIONARY.yaml.",
+    "privacy_rule": "Do not include secrets, Vault contents, sensitive personal information, or unrestricted evidence payloads in this register.",
+    "evidence_rule": "Link to authorized evidence records and source locations; do not treat this register as the evidence repository or proof of deployment."
+  },
+  "record_schema": {
+    "description": "Conceptual project-record contract. These names are not asserted fields in FILE 01 or in the existing product Registry; validate against the chosen storage schema before implementation.",
+    "required_fields": [
+      "project_id",
+      "project_name",
+      "project_owner",
+      "priority",
+      "workflow_status",
+      "record_status",
+      "created_at",
+      "updated_at"
+    ],
+    "fields": {
+      "project_id": "Stable project-scoped identifier; must not be confused with a Registry product ID.",
+      "project_name": "Project or initiative display name under the MC GROUP canonical structure.",
+      "summary": "Short, non-sensitive description of scope and intended outcome.",
+      "owner_org_unit": "MC GROUP canonical organizational area or approved project owner group.",
+      "project_owner": "Accountable owner identifier; use only authorized display information.",
+      "contributors": "Optional list of authorized contributor identifiers; do not imply access from listing a person here.",
+      "priority": "P1 | P2 | P3 | P4; priority only, never an authorization value.",
+      "registry_product_refs": "List of stable identifiers referencing existing Registry entries; empty if no applicable product link is verified.",
+      "workflow_status": "One of STATUS_DICTIONARY.yaml workflow codes.",
+      "verification_status": "One of STATUS_DICTIONARY.yaml verification codes, or null until applicable.",
+      "deployment_status": "One of STATUS_DICTIONARY.yaml deployment codes, or null until applicable.",
+      "artifact_maturity": "One of STATUS_DICTIONARY.yaml artifact maturity codes.",
+      "environment": "LOCAL | TEST | STAGING | PRODUCTION | null; identifies scope only and does not assert environment availability.",
+      "start_date": "ISO 8601 date or null.",
+      "target_date": "ISO 8601 date or null; planned date only.",
+      "created_at": "ISO 8601 timestamp with timezone.",
+      "updated_at": "ISO 8601 timestamp with timezone.",
+      "last_reviewed_at": "ISO 8601 timestamp with timezone or null.",
+      "evidence_refs": "Authorized references to evidence records; do not embed sensitive evidence payloads.",
+      "related_work_item_refs": "Optional identifiers for tasks tracked in the execution workflow.",
+      "risk_summary": "Optional non-sensitive summary; keep detailed restricted risks in their authorized source.",
+      "record_status": "ACTIVE | ON_HOLD | COMPLETED | CANCELLED | ARCHIVED; a register lifecycle label, not a workflow status or deployment claim.",
+      "source_refs": "References to authoritative records or documentation, with access appropriate to the viewer."
+    }
+  },
+  "records": [],
+  "record_status_dictionary": {
+    "ACTIVE": "Project is currently tracked as active; does not mean work is actively in progress.",
+    "ON_HOLD": "Project tracking is paused by an authorized decision; record the reason and review point.",
+    "COMPLETED": "Project-level scope has been accepted by its authorized owner; does not imply deployment or verification unless those statuses independently support the claim.",
+    "CANCELLED": "Project was stopped by an authorized decision; preserve history and rationale.",
+    "ARCHIVED": "Project record is retained for traceability and is no longer part of the active register view."
+  },
+  "validation_rules": [
+    "project_id must be unique within the project register and must not be reused as a product Registry identifier.",
+    "Every non-null registry_product_refs entry must resolve to an existing Registry record after the Registry path and schema are verified.",
+    "Do not create a Registry record as a side effect of adding a project record.",
+    "Validate each status code against STATUS_DICTIONARY.yaml; reject unknown codes rather than coercing them to a success state.",
+    "Do not infer project completion from workflow status, deployment status, or a target date alone.",
+    "Do not mark deployment as verified without environment-specific deployment and post-deployment evidence.",
+    "Record status changes and consequential edits as auditable events using the verified evidence/workflow mechanism.",
+    "Use null or an explicit unknown value for unverified facts; do not invent owners, dates, Registry IDs, or system state.",
+    "Apply authorization before returning records to dashboards, APIs, exports, or AI agents."
+  ],
+  "access_model": {
+    "default": "PROJECT_SCOPED_AUTHORIZED_ACCESS",
+    "public_access": "No project records are public by default.",
+    "admin_access": "Owner-only administration is a requirement from FILE 00; actual MFA and enforcement remain unverified.",
+    "ai_access": "Provide only task-scoped, least-privilege project fields needed for an approved task; never expose secrets or unrelated private data.",
+    "exports": "Restrict and audit exports according to the approved access policy; omit sensitive fields by default."
+  },
+  "integration_constraints": [
+    "The existing Registry/products.json remains the product catalog source of truth; its presence, location, schema, and consumers were not verified in the inspected repository snapshot.",
+    "This project register is a separate project execution index and must not be represented as the Registry or as a substitute for it.",
+    "FILE 01 was not present in the inspected repository tree; locate and review its actual schema before mapping evidence_refs or implementing persistence.",
+    "Before implementation, define a validated storage format, ownership, access control, change history, backup, and recovery approach with the authorized owner.",
+    "Use additive, versioned integration and a non-production test fixture where possible; require compatibility checks and rollback planning before approved writes to existing systems.",
+    "FILE 04 may derive authorized summary views from this register only after the actual source, schema, and access controls are verified."
+  ],
+  "initial_data_state": {
+    "records": 0,
+    "interpretation": "No project records are asserted by this template. An empty records array means no records are populated here; it does not mean MC GROUP has no projects.",
+    "registry_integration": "UNVERIFIED",
+    "file_01_schema_mapping": "UNVERIFIED",
+    "deployment_state": "NOT_ASSERTED"
+  },
+  "change_log": [
+    {
+      "version": "1.0.0",
+      "date": "2026-11-16",
+      "status": "PROPOSED",
+      "change": "Initial project execution register contract; intentionally contains no project entries and does not duplicate the product Registry."
+    }
+  ]
+}
