@@ -1,0 +1,191 @@
+schema_version: "1.0.0"
+file_id: "FILE-02"
+name: "STATUS_DICTIONARY"
+title: "MC GROUP Evidence & Execution System — Status Dictionary"
+status: "PROPOSED"
+updated_at: "2026-11-16"
+source_of_truth:
+  governance: "MC_GROUP_FOUNDATION.md"
+  evidence_record_format: "FILE 01 — EVIDENCE_RECORD_TEMPLATE.yaml (location and schema must be verified before binding fields)"
+purpose: >-
+  Define shared workflow, verification, and deployment status vocabularies for the
+  Evidence & Execution System. These status dimensions are separate: a work item
+  can be complete while its evidence or deployment remains unverified.
+
+principles:
+  - "Workflow status describes work progress, not authorization or deployment readiness."
+  - "Verification status describes whether evidence has been reviewed; it does not imply approval unless explicitly stated."
+  - "Deployment status describes operational environment state and must be supported by evidence."
+  - "P1-P4 priority is not a status and does not grant access."
+  - "Do not infer a status from a domain name, repository file, AI response, or plan."
+  - "Preserve source record history; status changes must be attributable and auditable."
+  - "Use BLOCKED when work cannot proceed; record the reason and the owner/action needed to unblock it."
+
+status_dimensions:
+  workflow:
+    description: "Lifecycle of an execution item, deliverable, or task."
+    values:
+      - code: "BACKLOG"
+        label: "Backlog"
+        meaning: "Identified and accepted for tracking, but work has not started."
+        terminal: false
+      - code: "READY"
+        label: "Ready"
+        meaning: "Scope, owner, and required inputs are sufficiently clear to begin."
+        terminal: false
+      - code: "IN_PROGRESS"
+        label: "In progress"
+        meaning: "Work has started and is actively being performed."
+        terminal: false
+      - code: "BLOCKED"
+        label: "Blocked"
+        meaning: "Work cannot proceed until a dependency, decision, access, or issue is resolved."
+        terminal: false
+      - code: "IN_REVIEW"
+        label: "In review"
+        meaning: "Work is submitted for review or approval; completion has not yet been accepted."
+        terminal: false
+      - code: "CHANGES_REQUESTED"
+        label: "Changes requested"
+        meaning: "Review identified changes that must be addressed before acceptance."
+        terminal: false
+      - code: "DONE"
+        label: "Done"
+        meaning: "The defined work is complete and accepted by the authorized owner/reviewer."
+        terminal: true
+      - code: "CANCELLED"
+        label: "Cancelled"
+        meaning: "The authorized owner has stopped the work; retain its record and rationale."
+        terminal: true
+    transition_rules:
+      - "BACKLOG may move to READY, IN_PROGRESS, BLOCKED, or CANCELLED."
+      - "READY may move to IN_PROGRESS, BLOCKED, or CANCELLED."
+      - "IN_PROGRESS may move to BLOCKED, IN_REVIEW, or CANCELLED."
+      - "BLOCKED may return to its prior active state, move to IN_PROGRESS, or be CANCELLED; record the resolution or cancellation rationale."
+      - "IN_REVIEW may move to DONE, CHANGES_REQUESTED, or BLOCKED."
+      - "CHANGES_REQUESTED may move to IN_PROGRESS, BLOCKED, or CANCELLED."
+      - "DONE and CANCELLED are terminal for the current record; reopening requires an auditable new revision or linked follow-up item."
+      - "A transition to DONE requires an identified accepting authority and linked completion evidence appropriate to the work."
+
+  verification:
+    description: "Review state of evidence supporting a claim, decision, control, or result."
+    values:
+      - code: "NOT_SUBMITTED"
+        label: "Not submitted"
+        meaning: "No evidence has been submitted for verification."
+      - code: "PENDING_REVIEW"
+        label: "Pending review"
+        meaning: "Evidence has been submitted but not yet reviewed by an authorized reviewer."
+      - code: "VERIFIED"
+        label: "Verified"
+        meaning: "An authorized reviewer checked the evidence against stated criteria and recorded the result."
+      - code: "REJECTED"
+        label: "Rejected"
+        meaning: "The submitted evidence does not support the stated claim or fails the review criteria."
+      - code: "STALE"
+        label: "Stale"
+        meaning: "Previously reviewed evidence may no longer represent the current state and needs revalidation."
+      - code: "NOT_APPLICABLE"
+        label: "Not applicable"
+        meaning: "Verification does not apply; record the reason rather than leaving the value ambiguous."
+    rules:
+      - "VERIFIED requires evidence references, reviewer identity, review time, and the criteria or scope checked."
+      - "A status of DONE does not automatically make evidence VERIFIED."
+      - "AI-generated output is not VERIFIED solely because an AI produced it."
+      - "Changes to the underlying artifact, configuration, or environment may make prior evidence STALE."
+      - "Use REJECTED with a reason and a requested corrective action where applicable."
+
+  deployment:
+    description: "State of an artifact or service in an explicitly named environment."
+    environments:
+      - "LOCAL"
+      - "TEST"
+      - "STAGING"
+      - "PRODUCTION"
+    values:
+      - code: "NOT_DEPLOYED"
+        label: "Not deployed"
+        meaning: "No deployment to the stated environment is evidenced."
+      - code: "DEPLOYMENT_PLANNED"
+        label: "Deployment planned"
+        meaning: "A deployment is proposed or scheduled but has not been evidenced as executed."
+      - code: "DEPLOYING"
+        label: "Deploying"
+        meaning: "A deployment is in progress; do not treat the target as ready."
+      - code: "DEPLOYED_UNVERIFIED"
+        label: "Deployed, unverified"
+        meaning: "Deployment execution is evidenced, but post-deployment checks have not passed or are not recorded."
+      - code: "DEPLOYED_VERIFIED"
+        label: "Deployed, verified"
+        meaning: "Deployment and required post-deployment checks are evidenced for the named environment."
+      - code: "DEPLOYMENT_FAILED"
+        label: "Deployment failed"
+        meaning: "The deployment did not complete successfully or failed required checks."
+      - code: "ROLLED_BACK"
+        label: "Rolled back"
+        meaning: "The deployment was reverted; retain deployment and rollback evidence."
+      - code: "NOT_APPLICABLE"
+        label: "Not applicable"
+        meaning: "The item is not intended for deployment; record the reason."
+    rules:
+      - "Every deployment status must identify an environment and reference deployment evidence."
+      - "DEPLOYED_VERIFIED requires recorded post-deployment checks and an authorized verifier."
+      - "A plan, URL, DNS label, commit, or successful build alone does not establish a production deployment."
+      - "PRODUCTION changes require applicable owner approval, security review, tests, and rollback readiness under FILE 00."
+      - "Do not mark a hostname or service as live without independent verification."
+
+  artifact_maturity:
+    description: "Readiness of a document, schema, or design artifact; independent of task progress and deployment."
+    values:
+      - code: "PROPOSED"
+        label: "Proposed"
+        meaning: "A planned design or requirement that has not been approved or verified."
+      - code: "DRAFT"
+        label: "Draft"
+        meaning: "An artifact is being authored and may change."
+      - code: "IN_REVIEW"
+        label: "In review"
+        meaning: "An artifact is awaiting authorized review."
+      - code: "APPROVED"
+        label: "Approved"
+        meaning: "An authorized owner has approved the artifact for its stated scope."
+      - code: "SUPERSEDED"
+        label: "Superseded"
+        meaning: "A newer approved version replaces this artifact; preserve it for traceability."
+      - code: "RETIRED"
+        label: "Retired"
+        meaning: "The artifact is no longer active; retain its history and retirement reason."
+    rules:
+      - "Approval of an architecture document does not establish implementation or deployment."
+      - "SUPERSEDED and RETIRED artifacts must link to the replacement or record why no replacement exists."
+
+required_change_metadata:
+  description: "Record these attributes for every consequential status transition, using the fields supported by the verified FILE 01 schema."
+  attributes:
+    - "record or work-item identifier"
+    - "status dimension and previous value"
+    - "new value"
+    - "changed_at timestamp in an unambiguous timezone (prefer UTC ISO 8601)"
+    - "actor identity (human or service/AI identity)"
+    - "reason or transition note"
+    - "evidence references or explicit reason none are applicable"
+    - "reviewer/approver identity when approval is required"
+  compatibility_note: >-
+    These are governance-level requirements, not asserted FILE 01 field names. Map them
+    to the actual evidence-record schema only after FILE 01 is located and reviewed;
+    do not silently modify or assume that schema.
+
+implementation_notes:
+  - "Use the exact uppercase status codes defined here for machine-readable values."
+  - "Display labels may be localized, but stored codes must remain stable."
+  - "Do not combine workflow, verification, deployment, and artifact maturity into one status field."
+  - "If a consumer cannot support multiple dimensions, preserve the underlying distinctions in linked records rather than collapsing meanings."
+  - "Unknown values must be rejected or handled explicitly; never silently coerce to DONE, VERIFIED, or DEPLOYED_VERIFIED."
+  - "FILE 03 must implement the workflow transitions and approval rules. FILE 04 must report statuses as derived views, not as a separate source of truth."
+  - "FILE 10 should validate vocabulary, allowed transitions, required evidence metadata, and separation of status dimensions."
+
+change_log:
+  - version: "1.0.0"
+    date: "2026-11-16"
+    status: "PROPOSED"
+    change: "Initial status vocabulary aligned with FILE 00; pending schema mapping to the verified FILE 01 evidence record."
