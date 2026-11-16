@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0.0",
+  "file_id": "FILE-04",
+  "name": "PROGRESS_DASHBOARD",
+  "title": "MC GROUP Evidence & Execution System — Progress Dashboard",
+  "status": "PROPOSED",
+  "updated_at": "2026-11-16",
+  "source_of_truth": {
+    "governance": "MC_GROUP_FOUNDATION.md",
+    "status_vocabulary": "STATUS_DICTIONARY.yaml",
+    "execution_workflow": "EXECUTION_WORKFLOW.yaml",
+    "evidence_record_format": "FILE 01 — EVIDENCE_RECORD_TEMPLATE.yaml (location and schema must be verified before implementation)"
+  },
+  "purpose": "Define a privacy-aware, derived dashboard contract for reporting project execution. This file is a design template, not live metrics or a deployed dashboard.",
+  "status_dimensions": [
+    "workflow",
+    "verification",
+    "deployment",
+    "artifact_maturity"
+  ],
+  "principles": [
+    "This dashboard is a read-only derived view, not an independent source of truth.",
+    "Keep workflow, verification, deployment, and artifact maturity separate; do not combine them into one health or completion status.",
+    "Priority P1-P4 indicates organizational priority and does not grant access.",
+    "Display only records the current viewer is authorized to see.",
+    "Do not expose secrets, Vault contents, private records, or unnecessary personal data.",
+    "Do not infer deployment, verification, DNS, authentication, or integration state from plans, URLs, commits, or this template.",
+    "Metrics must carry a source reference and an as-of timestamp; unknown or unavailable values remain null or explicitly unavailable, never silently treated as zero or success."
+  ],
+  "filters": {
+    "project_id": null,
+    "registry_product_id": null,
+    "priority": null,
+    "workflow_status": null,
+    "verification_status": null,
+    "deployment_status": null,
+    "environment": null,
+    "owner_id": null,
+    "updated_after": null,
+    "updated_before": null
+  },
+  "summary": {
+    "as_of": null,
+    "data_freshness": "UNAVAILABLE",
+    "authorized_scope": null,
+    "total_items": null,
+    "workflow_counts": {
+      "BACKLOG": null,
+      "READY": null,
+      "IN_PROGRESS": null,
+      "BLOCKED": null,
+      "IN_REVIEW": null,
+      "CHANGES_REQUESTED": null,
+      "DONE": null,
+      "CANCELLED": null
+    },
+    "verification_counts": {
+      "NOT_SUBMITTED": null,
+      "PENDING_REVIEW": null,
+      "VERIFIED": null,
+      "REJECTED": null,
+      "STALE": null,
+      "NOT_APPLICABLE": null
+    },
+    "deployment_counts": {
+      "NOT_DEPLOYED": null,
+      "DEPLOYMENT_PLANNED": null,
+      "DEPLOYING": null,
+      "DEPLOYED_UNVERIFIED": null,
+      "DEPLOYED_VERIFIED": null,
+      "DEPLOYMENT_FAILED": null,
+      "ROLLED_BACK": null,
+      "NOT_APPLICABLE": null
+    },
+    "artifact_maturity_counts": {
+      "PROPOSED": null,
+      "DRAFT": null,
+      "IN_REVIEW": null,
+      "APPROVED": null,
+      "SUPERSEDED": null,
+      "RETIRED": null
+    },
+    "blocked_items": null,
+    "stale_evidence_items": null,
+    "overdue_items": null
+  },
+  "items": [],
+  "item_contract": {
+    "description": "Each item is a redacted, authorization-filtered projection of an underlying project record. Field names are dashboard contract names and are not asserted fields in FILE 01.",
+    "fields": {
+      "work_item_id": "string",
+      "project_id": "string",
+      "registry_product_id": "string or null; reference to the existing Registry only",
+      "title": "string; avoid sensitive details",
+      "priority": "P1 | P2 | P3 | P4 | null",
+      "workflow_status": "STATUS_DICTIONARY.yaml workflow code",
+      "verification_status": "STATUS_DICTIONARY.yaml verification code or null when not applicable/not tracked",
+      "deployment_status": "STATUS_DICTIONARY.yaml deployment code or null when not applicable/not tracked",
+      "environment": "LOCAL | TEST | STAGING | PRODUCTION | null",
+      "artifact_maturity": "STATUS_DICTIONARY.yaml artifact maturity code or null",
+      "owner_display": "authorized display name or opaque identifier; null when not permitted",
+      "updated_at": "ISO 8601 timestamp or null",
+      "blocker_summary": "short, non-sensitive summary or null",
+      "evidence_reference_count": "integer or null; do not expose restricted evidence contents",
+      "source_reference": "authorized source record reference"
+    }
+  },
+  "data_sources": [
+    {
+      "source": "Project-scoped execution records",
+      "authority": "Respective project owner and approved project record source",
+      "status": "UNVERIFIED",
+      "notes": "Source location, schema, and access controls must be identified before implementation."
+    },
+    {
+      "source": "Registry/products.json",
+      "authority": "Existing MC GROUP product Registry",
+      "status": "UNVERIFIED",
+      "notes": "Reference stable product identifiers and approved metadata only. Do not duplicate or replace the Registry. The repository path and schema were not present in the inspected repository snapshot."
+    },
+    {
+      "source": "FILE 01 evidence records",
+      "authority": "Verified FILE 01 schema and authorized evidence store",
+      "status": "UNVERIFIED",
+      "notes": "FILE 01 location/schema and evidence storage source must be located and reviewed before field mapping."
+    }
+  ],
+  "freshness_policy": {
+    "as_of_required": true,
+    "show_stale_data_warning": true,
+    "maximum_age_minutes": null,
+    "maximum_age_note": "Set only after the source systems and operational requirements are verified and approved.",
+    "unknown_source_behavior": "Show UNAVAILABLE or UNKNOWN and identify the missing source; do not present empty metrics as verified zero values."
+  },
+  "access_and_privacy": {
+    "default_visibility": "PROJECT_SCOPED_AUTHORIZED_VIEWERS",
+    "public_view": "No project, evidence, owner, or operational metrics are public by default.",
+    "admin_view": "Owner-only access is a requirement from FILE 00; actual MFA and authorization enforcement remain unverified.",
+    "private_view": "Owner & Family personal data is excluded unless explicitly authorized for the private boundary.",
+    "secrets": "Never display or return credentials, tokens, keys, or Vault contents.",
+    "data_minimization": "Expose only fields required for the selected viewer and operational purpose.",
+    "authorization": "Enforce authorization at the data/API layer; hiding UI elements alone is not access control."
+  },
+  "calculation_rules": [
+    "Counts are computed from authorized source records at the stated as_of time and under the active filters.",
+    "Cancelled and superseded records remain traceable but are not silently counted as active work.",
+    "A workflow status of DONE does not imply VERIFIED or DEPLOYED_VERIFIED.",
+    "Deployment metrics must be grouped by named environment; do not combine environments in a way that implies production readiness.",
+    "Blocked and stale-evidence counts must be derived from the corresponding status dimensions, not inferred from free-text labels.",
+    "If source records disagree or contain unknown status codes, surface a data-quality warning and preserve the source value for review rather than coercing it."
+  ],
+  "implementation_constraints": [
+    "Validate this JSON and its status codes against FILE 02 and FILE 03 before implementation.",
+    "Locate and review FILE 01 before mapping any dashboard fields to evidence-record fields.",
+    "Use the existing Registry as a referenced source; do not build a parallel product catalog.",
+    "Use read-only, least-privilege access for dashboard data retrieval wherever feasible.",
+    "Log consequential administrative access and data exports according to approved policy without logging secrets or unnecessary personal data.",
+    "FILE 10 should test status aggregation, authorization filtering, stale-data handling, unknown values, and prevention of sensitive-field exposure."
+  ],
+  "change_log": [
+    {
+      "version": "1.0.0",
+      "date": "2026-11-16",
+      "status": "PROPOSED",
+      "change": "Initial dashboard contract; contains no live project records or operational metrics."
+    }
+  ]
+}
